@@ -8,36 +8,7 @@ import os.path
 import requests
 from bs4 import BeautifulSoup
 
-VersionDL = "1.0.16"
 
-url3 = "https://jpinx.000webhostapp.com/"
-page3 = requests.get(url3)
-soup3 = BeautifulSoup(page3.content, 'html.parser')
-lienSCP3 = soup3.find_all("p",class_="LatestVersion")
-for lien13 in lienSCP3:
-    S3 = lien13.string
-    
-print("")
-print("Verification de mise a jour...")
-try:
-    if(S3 == VersionDL):
-        print()
-        print("Site 65 Launcher est à jour !")
-        print("Version actuelle : ",VersionDL)
-    else:
-        print()
-        print("Une nouvelle version est disponible !")
-        print("Version actuelle   : ",VersionDL)
-        print("Version disponible : ",S3)
-        url4 = "https://jpinx.000webhostapp.com/"
-        page4 = requests.get(url4)
-        soup4 = BeautifulSoup(page4.content, 'html.parser')
-        lienSCP4 = soup4.find_all("p",class_="updates")
-        for lien14 in lienSCP4:
-            S4 = lien14.string
-            print(S4)
-except:
-    print("Impossible de verifier les mises à jour")
 version = sys.argv[1]
 avecforge = sys.argv[2]
 pseudo = sys.argv[3]
@@ -68,22 +39,45 @@ minecraft_directory += version
 #enregistrement prerelease
 dirconfig = dirlocal + "config.txt"
 dirconfigr = dirlocal + "config.txt"
-
-config = open(dirconfig,"a+")
-config.write("")
-config.write("1")
-
 configr = open(dirconfigr,"r")
 
 texte = configr.readline()
-nbrelease = 1
+nbrelease = 0
 for car in texte:
     nbrelease = nbrelease + 1
+
+i=1
+newpre =False
+print(nbrelease)
+while(i<nbrelease):
+    
+    fichier = open((dirlocal + "prerelease" + str(i)+".txt"),"r")
+    line = fichier.readline()
+    line = fichier.readline()
+    line.lstrip("Version : ")
+    line2 = fichier.readline()
+    line2.lstrip("Username : ")
+    line3 = fichier.readline()
+    line3.lstrip("Avec forge : ")
+    line4 = fichier.readline()
+    line4.lstrip("RAMM : ")
+    if(line == version and line2 == pseudo and line3 == avecforge and line4 == maxG):
+        newpre = False
+    else:
+        newpre =True
+    i = i +1
+
+config = open(dirconfig,"a+")
+if(newpre):
+    config.write("1")
+else:
+    pass
+    #rien car pas de nouvelle prerelease
+
 print("Accedez aux fichiers de jeux et de configuration du Launcher ici : ",dirlocal)
 print("Minecrafts sera installé dans ce repertoire : ",minecraft_directory)
 print()
 
-texte2 = input("Tapez pour continuer")
 
 def set_status(status: str):
     print(status)
@@ -120,27 +114,28 @@ else:
     print()
 
 #prerelease
-
-direct = dirlocal + "prerelease"
-direct += str(nbrelease)
-direct += ".txt"
-essayer = open(direct,"w")
-PRERELEASE = "Prerelease" + str(nbrelease)
-essayer.write(PRERELEASE)
-essayer.write("\n")
-VERSION = "Version : "+version
-essayer.write(VERSION)
-essayer.write("\n")
-USERNAME = "Username : "+pseudo
-essayer.write(USERNAME)
-essayer.write("\n")
-AVECFORGE = "Avec forge : "+avecforge
-essayer.write(AVECFORGE)
-essayer.write("\n")
-RAM = "RAMM : "+maxG
-essayer.write(RAM)
-
-
+if(newpre):
+    direct = dirlocal + "prerelease"
+    direct += str(nbrelease)
+    direct += ".txt"
+    essayer = open(direct,"w")
+    PRERELEASE = "Prerelease" + str(nbrelease)
+    essayer.write(PRERELEASE)
+    essayer.write("\n")
+    VERSION = "Version : "+version
+    essayer.write(VERSION)
+    essayer.write("\n")
+    USERNAME = "Username : "+pseudo
+    essayer.write(USERNAME)
+    essayer.write("\n")
+    AVECFORGE = "Avec forge : "+avecforge
+    essayer.write(AVECFORGE)
+    essayer.write("\n")
+    RAM = "RAMM : "+maxG
+    essayer.write(RAM)
+else:
+    pass
+    #rien car pas de nouvelle prerelease
 time.sleep(1)
 
 
@@ -198,20 +193,29 @@ if(avecforge =="1"):
     for lien1 in lienSCP:
         S = lien1.string
     print(S)
+
+    url11 = "https://jpinx.000webhostapp.com/"
+    page11 = requests.get(url11)
+    soup11 = BeautifulSoup(page11.content, 'html.parser')
+    lienSCP11 = soup.find_all("p",class_="ModularVC")
+    for lien111 in lienSCP11:
+        S11 = lien111.string
+    print(S11)
     
     vehiclemod = "https://download.pearltrees.com/s/file/download/282324970/?pearlId=486672137"
-    VoiceChat = "https://download.pearltrees.com/s/file/download/282324969/?pearlId=486672135"
+    VoiceChat = S11
     WorldEdit = "https://download.pearltrees.com/s/file/download/282324968/?pearlId=486672133"
     #on supprime tous les mods
     if(optimise=="1"):
         print()
         print("Optimisation...")
         print("Les mods ne seront pas mis à jour")
+        print("SVP patientez...")
         print()
         arabe = minecraft_launcher_lib.utils.get_installed_versions(minecraft_directory)
         versionn =arabe[1]
         minecraft_command = minecraft_launcher_lib.command.get_minecraft_command(versionn['id'], minecraft_directory, options)
-        subprocess.call(minecraft_command)
+        subprocess.call(minecraft_command)    
     else:
         try:
             opti = DM +"OptiFine.jar"
@@ -289,7 +293,7 @@ if(avecforge =="1"):
 
         try:    
             print()
-            dir7 = directory_mods + "VoiceChatmod.jar"
+            dir7 = directory_mods + "ModularVoiceChatmod.jar"
             print("Telechargement/Mise à jour de : VoiceChatmod")
             wget.download(VoiceChat,dir7)
         except:
@@ -352,14 +356,19 @@ if(avecforge =="1"):
         
 
     #et on lance
-        arabe = minecraft_launcher_lib.utils.get_installed_versions(minecraft_directory)
-        try:
-            versionn = arabe[1]
-        except:
-            versionn = arabe[0]
-            print("Impossible de charger et de detecter Forge (2 causes posssibles , voir README")
-        minecraft_command = minecraft_launcher_lib.command.get_minecraft_command(versionn['id'], minecraft_directory, options)
-        subprocess.call(minecraft_command)
+            if(optimise=="1"):
+                pass
+            else:
+                arabe = minecraft_launcher_lib.utils.get_installed_versions(minecraft_directory)
+                try:
+                    versionn = arabe[1]
+                except:
+                    versionn = arabe[0]
+                print("Impossible de charger et de detecter Forge (2 causes posssibles , voir README")
+                minecraft_command = minecraft_launcher_lib.command.get_minecraft_command(versionn['id'], minecraft_directory, options)
+                subprocess.call(minecraft_command)
+            
+        
 elif(avecforge=="0"):
     
     minecraft_command = minecraft_launcher_lib.command.get_minecraft_command(version, minecraft_directory, options)
@@ -369,8 +378,6 @@ else:
 
     print("Error:LS65 n'a pas donné l'argument 'avecforge', mettre à jour le LauncherS65peut resoudre ce probleme sinon demander de l'aide au développeur")
 
-directory_mods = minecraft_directory + "/mods/"
-print("Telechargement/Mise à jour des mods dans ce répertoire : ",directory_mods)
 
 
 
